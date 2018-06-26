@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: "{{ printf "zk-hs-%s" .Release.Name | trunc 24 }}"
+  name: "zk-hs-{{.Values.Version}}-{{.Values.Build}}"
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    component: "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+    component: "zk-{{.Values.Version}}-{{.Values.Build}}"
 spec:
   ports:
   - port: {{.Values.ServerPort}}
@@ -16,54 +16,54 @@ spec:
     name: leader-election
   clusterIP: None
   selector:
-    component: "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+    component: "zk-{{.Values.Version}}-{{.Values.Build}}"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: "{{ printf "zk-cs-%s" .Release.Name | trunc 24 }}"
+  name: "zk-cs-{{.Values.Version}}-{{.Values.Build}}"
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    component: "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+    component: "zk-{{.Values.Version}}-{{.Values.Build}}"
 spec:
   ports:
   - port: {{.Values.ClientPort}}
     name: server
   selector:
-    component: "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+    component: "zk-{{.Values.Version}}-{{.Values.Build}}"
 ---
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: "{{ printf "zk-pdb-%s" .Release.Name | trunc 24 }}"
+  name: "zk-pdb-{{.Values.Version}}-{{.Values.Build}}"
   annotations:
     helm.sh/created: {{.Release.Time.Seconds | quote }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    component: "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+    component: "zk-{{.Values.Version}}-{{.Values.Build}}"
 spec:
   selector:
     matchLabels:
-      component: "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+      component: "zk-{{.Values.Version}}-{{.Values.Build}}"
   maxUnavailable: {{.Values.MaxUnavailable}}
 ---
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
-  name: "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+  name: "zk-{{.Values.Version}}-{{.Values.Build}}"
   annotations:
     helm.sh/created: {{.Release.Time.Seconds | quote }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    component: "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+    component: "zk-{{.Values.Version}}-{{.Values.Build}}"
 spec:
-  serviceName: "{{ printf "zk-hs-%s" .Release.Name | trunc 24 }}"
+  serviceName: "zk-hs-{{.Values.Version}}-{{.Values.Build}}"
   replicas: {{.Values.Servers}}
   podManagementPolicy: Parallel
   updateStrategy:
@@ -71,7 +71,7 @@ spec:
   template:
     metadata:
       labels:
-        component: "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+        component: "zk-{{.Values.Version}}-{{.Values.Build}}"
     spec:
       {{- if eq .Values.AntiAffinity "hard"}}
       affinity:
@@ -82,7 +82,7 @@ spec:
                   - key: "component"
                     operator: In
                     values:
-                    - "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+                    - "zk-{{.Values.Version}}-{{.Values.Build}}"
               topologyKey: "kubernetes.io/hostname"
       {{- else if eq .Values.AntiAffinity "soft"}}
       affinity:
@@ -95,7 +95,7 @@ spec:
                       - key: "component"
                         operator: In
                         values:
-                         - "{{ printf "zk-%s" .Release.Name  | trunc 24 }}"
+                         - "zk-{{.Values.Version}}-{{.Values.Build}}"
                  topologyKey: "kubernetes.io/hostname"
       {{- end}}
       containers:

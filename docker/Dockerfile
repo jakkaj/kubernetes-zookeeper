@@ -1,4 +1,10 @@
 FROM ubuntu:16.04 
+
+RUN apt-get update
+RUN apt-get install curl wget -y
+RUN apt-get install iputils-ping -y 
+RUN apt-get install nano -y
+
 ENV ZK_USER=zookeeper \
 ZK_DATA_DIR=/var/lib/zookeeper/data \
 ZK_DATA_LOG_DIR=/var/lib/zookeeper/log \
@@ -7,8 +13,7 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 ARG GPG_KEY=C823E3E5B12AF29C67F81976F5CECB3CB5E9BD2D
 ARG ZK_DIST=zookeeper-3.4.10
-RUN set -x \
-    && apt-get update \
+RUN set -x \    
     && apt-get install -y openjdk-8-jre-headless wget netcat-openbsd \
 	&& wget -q "http://www.apache.org/dist/zookeeper/$ZK_DIST/$ZK_DIST.tar.gz" \
     && wget -q "http://www.apache.org/dist/zookeeper/$ZK_DIST/$ZK_DIST.tar.gz.asc" \
